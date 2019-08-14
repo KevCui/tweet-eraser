@@ -1,19 +1,23 @@
 #!/usr/bin/env bash
 #
-# Erase some/all user tweets/RTs/favorites
+# Erase some/all user tweets/RTs/likes
 #
 #/ Usage:
-#/   ./tweet-eraser.sh [-t|-r|-f|-a]
+#/   ./tweet-eraser.sh [-t|-f <file>] [-r|-f <file>] [-l|-f <file>]
 #/
 #/ Options:
 #/   -t               Optional, remove tweets
+#/                    -f <file> to use resource file tweet.js
 #/   -r               Optional, remove tweets and RTs
-#/   -f               Optional, remove favorites/likes
-#/   -a               Optional, remove all user tweets, RTs and favorites/likes
+#/                    -f <file> to use resource file tweet.js
+#/   -l               Optional, remove likes
+#/                    -f <file> to use resource file like.js
 #/   -h | --help      Display this help message
 
 set -e
 set -u
+trap cleanup INT
+trap cleanup EXIT
 
 usage() {
     # Display usage message
@@ -36,17 +40,10 @@ set_command() {
     _CHROME="$(command -v chrome)" || _CHROME="$(command -v chromium)" || command_not_found "chrome"
 }
 
-check_var() {
-    # Check _DELETE_TWEET, _DELETE_TWEET_RT and _DELETE_FAV
-    if [[ -z "${_DELETE_TWEET:-}" && -z "${_DELETE_TWEET_RT:-}" && -z "${_DELETE_FAV:-}" ]]; then
-        echo "Missing option! At least option is required!" && usage
-    fi
-}
-
 set_args() {
     # Declare arguments
     expr "$*" : ".*--help" > /dev/null && usage
-    while getopts ":htrfa" opt; do
+    while getopts ":htrlf:" opt; do
         case $opt in
             t)
                 _DELETE_TWEET=true
@@ -54,13 +51,12 @@ set_args() {
             r)
                 _DELETE_TWEET_RT=true
                 ;;
-            f)
-                _DELETE_FAV=true
+            l)
+                _DELETE_LIKE=true
                 ;;
-            a)
-                _DELETE_TWEET=true
-                _DELETE_TWEET_RT=true
-                _DELETE_FAV=true
+            f)
+                _INPUT_FILE="$OPTARG"
+                _TWEETS_LIKES=$(tweets_or_likes "$_INPUT_FILE")
                 ;;
             h)
                 usage
@@ -71,6 +67,47 @@ set_args() {
                 ;;
         esac
     done
+}
+
+check_var() {
+    # Check _DELETE_TWEET, _DELETE_TWEET_RT and _DELETE_LIKE
+    if [[ -z "${_DELETE_TWEET:-}" && -z "${_DELETE_TWEET_RT:-}" && -z "${_DELETE_LIKE:-}" && -z "${_INPUT_FILE:-}" ]]; then
+        echo "Missing option! At least one option of -t or -r of -l or -f is required!" && usage
+    fi
+    if [[ -n "${_INPUT_FILE:-}" && ( -z "${_DELETE_TWEET:-}" && -z "${_DELETE_TWEET_RT:-}" && -z "${_DELETE_LIKE:-}") ]]; then
+        echo "Missing option! At least one option of -t or -r of -l or -f is required!" && usage
+    fi
+    if [[ "${_TWEETS_LIKES:-}" == "likes" && -n ${_DELETE_TWEET:-} ]]; then
+        echo "Wrong option -t, -f indicates an input file of likes!" && usage
+    fi
+    if [[ "${_TWEETS_LIKES:-}" == "likes" && -n ${_DELETE_TWEET_RT:-} ]]; then
+        echo "Wrong option -r, -f indicates an input file of likes!" && usage
+    fi
+    if [[ "${_TWEETS_LIKES:-}" == "tweets" && -n ${_DELETE_LIKE:-} ]]; then
+        echo "Wrong option -l, -f indicates an input file of tweets!" && usage
+    fi
+}
+
+cleanup() {
+    # Invalid all tokens when error exits
+    if [[ -n "${_COOKIE:-}" && -n "${_CSRF_TOKEN:-}" && -n "${_AUTH_TOKEN:-}" ]]; then
+        logout_twitter
+    fi
+}
+
+tweets_or_likes() {
+    # Determine input file is using for tweets or likes
+    # $1: input file, tweet.js or like.js
+    local firstline
+
+    firstline=$(head -1 "$1")
+    if [[ "$firstline" == *"tweet.part"*  ]]; then
+        echo "tweets"
+    elif [[ "$firstline" == *"like.part"*  ]]; then
+        echo "likes"
+    else
+        echo "Cannot figure out input file data format!" >&2 && exit 1
+    fi
 }
 
 command_not_found() {
@@ -127,7 +164,7 @@ call_user_timeline() {
 }
 
 call_favorites_list() {
-    # Get max. 200 favorites since max_id
+    # Get max. 200 likes since max_id
     # $1: max_id
     echo "max id: $1" >&2
     $_CURL -sSX GET "$_HOST/favorites/list.json?max_id=$1&count=200" \
@@ -141,41 +178,71 @@ call_favorites_list() {
     | $_JQ -r '.[].id_str'
 }
 
+get_tweet_id_from_file() {
+    # Get tweet id from file
+    # $1: input file, tweet.js or like.js
+    # $2: including RTs? true or false
+    #     necessary when input file is tweet.js
+
+    if [[ "$_TWEETS_LIKES" == "tweets"  ]]; then
+        if [[ "${2:-}" == true ]]; then
+            sed -E '1s/.*/\[\{/' "$1" | $_JQ -r '.[].id_str'
+        else
+            sed -E '1s/.*/\[\{/' "$1" | $_JQ -r '.[] | select(.full_text | test("^RT @") == false) | "\(.id_str)"'
+        fi
+    elif [[ "$_TWEETS_LIKES" == "likes"  ]]; then
+        sed -E '1s/.*/\[\{/' "$1" | $_JQ -r '.[].like.tweetId'
+    else
+        echo "Cannot figure out input file data format!" >&2 && exit 1
+    fi
+}
+
 fetch_tweet_ids() {
     # Get tweet ids
-    # $1: tweet or rt or fav
-    local maxid currentmaxid currentids ids
+    # $1: tweet or tweet_and_rt or fav
+    local ids
 
-    maxid="$_MAX_ID"
-    currentmaxid=""
-    currentids=""
     ids=""
+    if [[ -z "${_INPUT_FILE:-}" ]]; then
+        local maxid currentmaxid currentids
 
-    while true; do
-        if [[ "${1:-}" == "rt" ]]; then
-            currentids="$(call_user_timeline "$maxid" true)"
+        currentmaxid=""
+        currentids=""
+        maxid="$_MAX_ID"
+        while true; do
+            if [[ "${1:-}" == "tweet_and_rt" ]]; then
+                currentids="$(call_user_timeline "$maxid" true)"
+            elif [[ "${1:-}" == "tweet" ]]; then
+                currentids="$(call_user_timeline "$maxid" false)"
+            elif [[ "${1:-}" == "fav" ]]; then
+                currentids="$(call_favorites_list "$maxid")"
+            else
+                echo "Nothing to fetch!" && exit 1
+            fi
+
+            currentmaxid=$(echo "$currentids" | tail -1)
+
+            if [[ "$maxid" == "$currentmaxid" ]]; then
+                break
+            else
+                ids=$(printf "%s\n%s" "$ids" "$currentids" | sed -E '/^\s*$/d')
+                maxid="$currentmaxid"
+            fi
+        done
+    else
+        if [[ "${1:-}" == "tweet_and_rt" ]]; then
+            ids="$(get_tweet_id_from_file "$_INPUT_FILE" true)"
         elif [[ "${1:-}" == "tweet" ]]; then
-            currentids="$(call_user_timeline "$maxid" false)"
+            ids="$(get_tweet_id_from_file "$_INPUT_FILE" false)"
         elif [[ "${1:-}" == "fav" ]]; then
-            currentids="$(call_favorites_list "$maxid")"
-        else
-            echo "Nothing to fetch!" && exit 1
+            ids="$(get_tweet_id_from_file "$_INPUT_FILE")"
         fi
-
-        currentmaxid=$(echo "$currentids" | tail -1)
-
-        if [[ "$maxid" == "$currentmaxid" ]]; then
-            break
-        else
-            ids=$(printf "%s\n%s" "$ids" "$currentids" | sed -E '/^\s*$/d')
-            maxid="$currentmaxid"
-        fi
-    done
+    fi
     echo "$ids" | sort -n | tee "${_TIMESTAMP}_ids_${1:-}.log"
 }
 
-delete_favorites() {
-    # Destory favorites
+delete_likes() {
+    # Destory likes
     # $1: tweet id
     printf "\nDeleting %s... " "$1" >&2
     $_CURL -sSX POST "$_HOST/favorites/destroy.json?id=$1" \
@@ -213,16 +280,16 @@ delete_user_tweets() {
 delete_tweet_retweets() {
     # Delete all retweets
     echo "Deleting all tweets and RTs..."
-    for id in $(fetch_tweet_ids "rt"); do
+    for id in $(fetch_tweet_ids "tweet_and_rt"); do
         delete_tweet "$id"
     done
 }
 
-delete_user_favorites() {
-    # Delete all favorites
-    echo "Deleting all favorites..."
+delete_user_likes() {
+    # Delete all likes
+    echo "Deleting all likes..."
     for id in $(fetch_tweet_ids "fav"); do
-        delete_favorites "$id"
+        delete_likes "$id"
     done
 }
 
@@ -234,8 +301,7 @@ main() {
     login_twitter
     [[ "${_DELETE_TWEET:-}" == true ]] && delete_user_tweets
     [[ "${_DELETE_TWEET_RT:-}" == true ]] && delete_tweet_retweets
-    [[ "${_DELETE_FAV:-}" == true ]] && delete_user_favorites
-    logout_twitter
+    [[ "${_DELETE_LIKE:-}" == true ]] && delete_user_likes
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
