@@ -89,7 +89,7 @@ check_var() {
 }
 
 cleanup() {
-    # Invalid all tokens when error exits
+    # Invalid all tokens when exit
     if [[ -n "${_COOKIE:-}" && -n "${_CSRF_TOKEN:-}" && -n "${_AUTH_TOKEN:-}" ]]; then
         logout_twitter
     fi
@@ -113,7 +113,7 @@ tweets_or_likes() {
 command_not_found() {
     # Show command not found message
     # $1: command name
-    # $2:installation URL
+    # $2: installation URL
     printf "%b\n" '\033[31m'"$1"'\033[0m command not found!'
     [[ -n "${2:-}" ]] && printf "%b\n" 'Install from \033[31m'"$2"'\033[0m'
     exit 1
@@ -148,7 +148,7 @@ logout_twitter() {
 }
 
 call_user_timeline() {
-    # Get max. 200 tweents since max_id, exclude RTs
+    # Get max. 200 tweets since max_id, exclude RTs
     # $1: max_id
     # $2: including RTs? true or false
     echo "max id: $1" >&2
@@ -168,13 +168,13 @@ call_favorites_list() {
     # $1: max_id
     echo "max id: $1" >&2
     $_CURL -sSX GET "$_HOST/favorites/list.json?max_id=$1&count=200" \
-      -H 'Accept: */*' \
-      -H 'Cache-Control: no-cache' \
-      -H 'Connection: keep-alive' \
-      -H 'Cookie: '"$_COOKIE" \
-      -H 'authorization: '"$_AUTH_TOKEN" \
-      -H 'x-csrf-token: '"$_CSRF_TOKEN" \
-      -H 'cache-control: no-cache' \
+        -H 'Accept: */*' \
+        -H 'Cache-Control: no-cache' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: '"$_COOKIE" \
+        -H 'authorization: '"$_AUTH_TOKEN" \
+        -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'cache-control: no-cache' \
     | $_JQ -r '.[].id_str'
 }
 
@@ -260,13 +260,13 @@ delete_tweet() {
     # $1: tweet id
     printf "\nDeleting %s... " "$1" >&2
     $_CURL -sSX POST "$_HOST/statuses/destroy/$1.json" \
-      -H 'Accept: */*' \
-      -H 'Cache-Control: no-cache' \
-      -H 'Connection: keep-alive' \
-      -H 'Cookie: '"$_COOKIE" \
-      -H 'authorization: '"$_AUTH_TOKEN" \
-      -H 'x-csrf-token: '"$_CSRF_TOKEN" \
-      -H 'cache-control: no-cache'
+        -H 'Accept: */*' \
+        -H 'Cache-Control: no-cache' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: '"$_COOKIE" \
+        -H 'authorization: '"$_AUTH_TOKEN" \
+        -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'cache-control: no-cache'
 }
 
 delete_user_tweets() {
