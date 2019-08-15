@@ -64,31 +64,31 @@ Usage:
 
 ## Examples
 
-- Erase my most recent tweets (< 3200):
+- Erase most recent tweets (< 3200):
 
 ```
 ~$ ./tweet-eraser.sh -t
 ```
 
-- Erase my most recent tweets and RTs (< 3200):
+- Erase most recent tweets and RTs (< 3200):
 
 ```
 ~$ ./tweet-eraser.sh -r
 ```
 
-- Erase my likes:
+- Erase likes:
 
 ```
 ~$ ./tweet-eraser.sh -l
 ```
 
-- Erase my tweets (> 3200) with local input file:
+- Erase tweets (> 3200) with local input file:
 
 ```
 ~$ ./tweet-eraser.sh -t -f tweet.js
 ```
 
-- Erase my likes, using headless mode:
+- Erase likes, using headless mode:
 
 ```
 ~$ ./tweet-eraser.sh -l -p

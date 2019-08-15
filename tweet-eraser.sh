@@ -17,19 +17,19 @@
 #/   -h | --help      Display this help message
 #/
 #/ Exmaples:
-#/   \e[32m- Erase my most recent tweets (< 3200):\e[0m
+#/   \e[32m- Erase most recent tweets (< 3200):\e[0m
 #/     ~$ ./tweet-eraser.sh \e[33m-t\e[0m
 #/
-#/   \e[32m- Erase my most recent tweets and RTs (< 3200):\e[0m
+#/   \e[32m- Erase most recent tweets and RTs (< 3200):\e[0m
 #/     ~$ ./tweet-eraser.sh \e[33m-r\e[0m
 #/
-#/   \e[32m- Erase my likes:\e[0m
+#/   \e[32m- Erase likes:\e[0m
 #/     ~$ ./tweet-eraser.sh \e[33m-l\e[0m
 #/
-#/   \e[32m- Erase my tweets (> 3200) with local input file:\e[0m
+#/   \e[32m- Erase tweets (> 3200) with local input file:\e[0m
 #/     ~$ ./tweet-eraser.sh \e[33m-t -f tweet.js\e[0m
 #/
-#/   \e[32m- Erase my likes, using headless mode:\e[0m
+#/   \e[32m- Erase likes, using headless mode:\e[0m
 #/     ~$ ./tweet-eraser.sh \e[33m-l -p\e[0m
 
 set -e
