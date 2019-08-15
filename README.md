@@ -106,7 +106,9 @@ If it needs to erase >3200 tweets, the additional file is required from [Twitter
 
 - Use `tweet.js` (data for tweets and RTs): `-f tweets.js`
 
-OR - Use `like.js` (data for likes): `-f like.js`
+OR
+
+- Use `like.js` (data for likes): `-f like.js`
 
 ## FAQ
 
@@ -117,6 +119,10 @@ To use Twitter Authentication API, it requires to create a Twitter app in order 
 - Why not provide an option to remove RTs only?
 
 I know, but [GET retweets_of_me API](https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweets_of_me#) is broken (or only working with oauth_token? I doubt): it always returns empty response without any data of RTs.
+
+- How fast this script can erase tweets?
+
+It took 15 minutes to erase 2400 tweets. Not great, not terrible.
 
 - Can I erase some old tweets but keep some recent ones?
 

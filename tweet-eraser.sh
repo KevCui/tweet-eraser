@@ -13,6 +13,7 @@
 #/   -l               Optional, remove likes
 #/                    -f <file> to use resource file like.js
 #/   -p               Optional, hide browser (use headless mode) and login from terminal
+#/                    This option doesn't support 2FA
 #/   -h | --help      Display this help message
 #/
 #/ Exmaples:
