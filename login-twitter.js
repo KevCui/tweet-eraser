@@ -1,10 +1,17 @@
+// ~$ ./login-twitter <chrome_path> <no_browser_boolean> <username> <password>
+//
+//   chrome_path:        path to chrome/chromium binary
+//   no_browser_boolean: 1 true, headless mode; 0 false, open browser
+//   username:           twitter account email address or phone nubmer
+//   password:           twitter credential
+
 const puppeteer = require('puppeteer');
 
 (async() => {
-    const contentLogin = process.argv[2];
-    const contentPassword = process.argv[3];
-    const chrome = process.argv[4];
-    const isheadless = true;
+    const chrome = process.argv[2];
+    const isheadless = Number(process.argv[3]);
+    const contentLogin = process.argv[4];
+    const contentPassword = process.argv[5];
 
     const loginUrl='https://twitter.com/login';
     const inputLogin = '.js-username-field';
@@ -13,18 +20,18 @@ const puppeteer = require('puppeteer');
     const homeButton = '.css-1dbjc4n.r-dnmrzs.r-1vvnge1';
 
     const browser = await puppeteer.launch({executablePath: chrome, headless: isheadless});
-    const context = await browser.createIncognitoBrowserContext();
-    const page = await context.newPage();
-
-    await page.goto(loginUrl, {timeout: 20000, waitUntil: 'domcontentloaded'});
+    const page = await browser.newPage();
+    await page.goto(loginUrl, {timeout: 30000, waitUntil: 'domcontentloaded'});
 
     await page.waitFor(sumbitButton)
-    await page.click(inputLogin)
-    await page.type(inputLogin, contentLogin);
-    await page.click(inputPassword)
-    await page.type(inputPassword, contentPassword);
-    const elementHandle = await page.$(sumbitButton);
-    await elementHandle.press('Enter');
+    if (contentPassword)  {
+        await page.click(inputLogin)
+        await page.type(inputLogin, contentLogin);
+        await page.click(inputPassword)
+        await page.type(inputPassword, contentPassword);
+        const elementHandle = await page.$(sumbitButton);
+        await elementHandle.press('Enter');
+    }
 
     await page.waitFor(homeButton);
     await page.click(homeButton);

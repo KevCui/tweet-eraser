@@ -3,7 +3,7 @@
 # Erase some/all user tweets/RTs/likes
 #
 #/ Usage:
-#/   ./tweet-eraser.sh [-t|-f <file>] [-r|-f <file>] [-l|-f <file>]
+#/   ./tweet-eraser.sh [-t|-f <file>] [-r|-f <file>] [-l|-f <file>] [-p]
 #/
 #/ Options:
 #/   -t               Optional, remove tweets
@@ -12,6 +12,7 @@
 #/                    -f <file> to use resource file tweet.js
 #/   -l               Optional, remove likes
 #/                    -f <file> to use resource file like.js
+#/   -p               Optional, hide browser (use headless mode) and login from terminal
 #/   -h | --help      Display this help message
 
 set -e
@@ -43,7 +44,7 @@ set_command() {
 set_args() {
     # Declare arguments
     expr "$*" : ".*--help" > /dev/null && usage
-    while getopts ":htrlf:" opt; do
+    while getopts ":htrlpf:" opt; do
         case $opt in
             t)
                 _DELETE_TWEET=true
@@ -57,6 +58,9 @@ set_args() {
             f)
                 _INPUT_FILE="$OPTARG"
                 _TWEETS_LIKES=$(tweets_or_likes "$_INPUT_FILE")
+                ;;
+            p)
+                _HEADLESS_MODE=true
                 ;;
             h)
                 usage
@@ -121,14 +125,19 @@ command_not_found() {
 
 login_twitter() {
     # Fetch tokens from twitter login
-    local u p r
-    echo -n "Twitter email/phone: " >&2
-    read -r u
-    echo -n "Twitter password: " >&2
-    read -rs p
-    echo ""
+    local r
 
-    r=$($_NODE "$_LOGIN_TWITTER_JS" "$u" "$p" "$_CHROME" | tee "${_TIMESTAMP}_tokens.log")
+    if [[ "${_HEADLESS_MODE:-}" == true ]]; then
+        local u p
+        echo -n "Twitter email/phone: " >&2
+        read -r u
+        echo -n "Twitter password: " >&2
+        read -rs p
+        echo ""
+        r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 1 "$u" "$p" | tee "${_TIMESTAMP}_tokens.log")
+    else
+        r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 0 | tee "${_TIMESTAMP}_tokens.log")
+    fi
 
     _COOKIE=$(echo "$r" | grep "kdt" | $_JQ -r '.[] | "\(.name)=\(.value);"' | awk '{printf $0}')
     _CSRF_TOKEN=$(echo "$r" | grep "x-csrf-token" | $_JQ -r '."x-csrf-token"')
