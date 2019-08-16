@@ -1,7 +1,7 @@
 tweet-eraser
 ============
 
-For some reason, after a bad dream, suddenly you want to reduce your digital footprint. Now you start to search for a way to erase only tweets, or only tweets and RTs, or only likes. And you don't trust other 3rd-part service to do that for you probably because of your bad dream. And you still want to keep your Twitter account active...
+For some reason, after a bad dream, suddenly you want to reduce your digital footprint. Now you start to search for a way to erase only tweets, or only tweets and RTs, or only likes. And you don't trust other 3rd-part service to do that for you, probably because of your bad dream. And you still want to keep your Twitter account active...
 
 ## Dependency
 
@@ -14,6 +14,8 @@ For some reason, after a bad dream, suddenly you want to reduce your digital foo
 - login-twitter.js: fetch Twitter tokens
 
 - tweet-eraser.sh: main script to call Twitter APIs
+
+- likes-downloader.sh: additional script to download Twitter likes to a markdown file as a quick backup
 
 ## Preparation
 
@@ -60,6 +62,18 @@ Usage:
   no_browser_boolean: 1 true, headless mode; 0 false, open browser
   username:           twitter account email address or phone nubmer
   password:           twitter credential
+```
+
+- likes-downloader.sh
+
+```
+Usage:
+  ./like-downloader.sh [-p]
+
+Options:
+  -p               Optional, hide browser (use headless mode) and login from terminal
+                   This option doesn't support 2FA
+  -h | --help      Display this help message
 ```
 
 ## Examples
