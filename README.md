@@ -146,7 +146,7 @@ It took 15 minutes to erase 2400 tweets. Not great, not terrible.
 
 - Can I erase some old tweets but keep some recent ones?
 
-Yes, it's possible. Change `_MAX_ID` variable in `tweet-eraser.sh`. Put a Twitter ID number which is greater than old tweets IDs but less than recent ones IDs.
+Yes, it's possible. Change `_MAX_ID` variable in `tweet-eraser.sh`. Put a tweet ID number which is greater than old tweets IDs but less than recent ones IDs.
 
 - Can I erase my tweet data on other 3rd-part servers using this script?
 
