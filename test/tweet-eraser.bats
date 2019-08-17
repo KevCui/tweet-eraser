@@ -10,7 +10,7 @@ setup() {
     _JQ="$(command -v jq)"
     _LIKE_FILE="test/test-like.js"
     _TWEET_FILE="test/test-tweet.js"
-    _TWEET_IDS="test/tweet.ids"
+    _TWEET_IDS="test/test-tweet.ids"
     _LOG_DIR="./log" && mkdir -p "$_LOG_DIR"
     _MAX_ID="99999999999999999999999"
 
