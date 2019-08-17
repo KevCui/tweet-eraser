@@ -34,8 +34,6 @@
 
 set -e
 set -u
-trap cleanup INT
-trap cleanup EXIT
 
 usage() {
     # Display usage message
@@ -93,11 +91,8 @@ set_args() {
 
 check_var() {
     # Check _DELETE_TWEET, _DELETE_TWEET_RT and _DELETE_LIKE
-    if [[ -z "${_DELETE_TWEET:-}" && -z "${_DELETE_TWEET_RT:-}" && -z "${_DELETE_LIKE:-}" && -z "${_INPUT_FILE:-}" ]]; then
-        echo "Missing option! At least one option of -t or -r of -l or -f is required!" && usage
-    fi
-    if [[ -n "${_INPUT_FILE:-}" && ( -z "${_DELETE_TWEET:-}" && -z "${_DELETE_TWEET_RT:-}" && -z "${_DELETE_LIKE:-}") ]]; then
-        echo "Missing option! At least one option of -t or -r of -l or -f is required!" && usage
+    if [[ -z "${_DELETE_TWEET:-}" && -z "${_DELETE_TWEET_RT:-}" && -z "${_DELETE_LIKE:-}" ]]; then
+        echo "Missing option! At least one option of -t or -r of -l is required!" && usage
     fi
     if [[ "${_TWEETS_LIKES:-}" == "likes" && -n ${_DELETE_TWEET:-} ]]; then
         echo "Wrong option -t, -f indicates an input file of likes!" && usage
@@ -133,6 +128,7 @@ tweets_or_likes() {
 }
 
 command_not_found() {
+    _TWEETS_LIKES=true
     # Show command not found message
     # $1: command name
     # $2: installation URL
@@ -263,6 +259,8 @@ fetch_tweet_ids() {
             ids="$(get_tweet_id_from_file "$_INPUT_FILE" false)"
         elif [[ "${1:-}" == "fav" ]]; then
             ids="$(get_tweet_id_from_file "$_INPUT_FILE")"
+        else
+            echo "Nothing to fetch!" && exit 1
         fi
     fi
     echo "$ids" | sort -n | tee "$_LOG_DIR/${_TIMESTAMP}_ids_${1:-}.log"
@@ -332,5 +330,7 @@ main() {
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    trap cleanup INT
+    trap cleanup EXIT
     main "$@"
 fi

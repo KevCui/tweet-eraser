@@ -108,6 +108,12 @@ Options:
 ~$ ./tweet-eraser.sh -l -p
 ```
 
+## Run tests
+
+```
+~$ bats test/tweet-eraser.bats
+```
+
 ## Limitation
 
 Be aware that using this script without additional input file can only erase about 3200 most recent tweets/RTs. It's [a limitation of Twitter API](https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline.html): `This method can only return up to 3,200 of a user's most recent Tweets. Native retweets of other statuses by the user is included in this total...`
