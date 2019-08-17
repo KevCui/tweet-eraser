@@ -26,9 +26,9 @@ const puppeteer = require('puppeteer');
     await page.waitFor(sumbitButton)
     if (contentPassword)  {
         await page.click(inputLogin)
-        await page.type(inputLogin, contentLogin);
+        await page.type(inputLogin, contentLogin, {delay: 50});
         await page.click(inputPassword)
-        await page.type(inputPassword, contentPassword);
+        await page.type(inputPassword, contentPassword, {delay: 80});
         const elementHandle = await page.$(sumbitButton);
         await elementHandle.press('Enter');
     }
