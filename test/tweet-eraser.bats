@@ -179,16 +179,46 @@ setup() {
     [ "${lines[2]}" = "11223344550003" ]
 }
 
-@test "CHECK: fetch_tweet_ids(): no \$_INPUT_FILE" {
+@test "CHECK: fetch_tweet_ids(): no \$_INPUT_FILE tweet_and_rt" {
     call_user_timeline() {
         i=$((1 + RANDOM % 5))
-        sed $i'!d' "$_TWEET_IDS" | tee -a "${_LOG_DIR}/${_TIMESTAMP}-test.output"
+        sed $i'!d' "$_TWEET_IDS" | tee -a "$_LOG_FILE"
     }
 
     _TIMESTAMP="$(date +%s)"
+    _LOG_FILE="${_LOG_DIR}/${_TIMESTAMP}-test.output"
+    true > "$_LOG_FILE"
     run fetch_tweet_ids "tweet_and_rt"
     [ "$status" -eq 0 ]
-    [ "$output" = "$(cat "${_LOG_DIR}/${_TIMESTAMP}-test.output" | sed -E '$ d' | sort -n)" ]
+    [ "$output" = "$(cat "$_LOG_FILE" | $_JQ -r '.[].id_str' | sed -E '$ d' | sort -n)" ]
+}
+
+@test "CHECK: fetch_tweet_ids(): no \$_INPUT_FILE tweet" {
+    call_user_timeline() {
+        i=$((1 + RANDOM % 5))
+        sed $i'!d' "$_TWEET_IDS" | tee -a "$_LOG_FILE"
+    }
+
+    _TIMESTAMP="$(date +%s)"
+    _LOG_FILE="${_LOG_DIR}/${_TIMESTAMP}-test.output"
+    true > "$_LOG_FILE"
+    run fetch_tweet_ids "tweet"
+    [ "$status" -eq 0 ]
+    [ "$output" = "$(cat "$_LOG_FILE" | $_JQ -r '.[].id_str' | sed -E '$ d' | sort -n)" ]
+}
+
+@test "CHECK: fetch_tweet_ids(): no \$_INPUT_FILE fav" {
+    call_favorites_list() {
+        i=$((1 + RANDOM % 5))
+        sed $i'!d' "$_TWEET_IDS" | tee -a "$_LOG_FILE"
+    }
+
+    _TIMESTAMP="$(date +%s)"
+    _LOG_FILE="${_LOG_DIR}/${_TIMESTAMP}-test.output"
+    true > "$_LOG_FILE"
+    run fetch_tweet_ids "fav"
+    [ "$status" -eq 0 ]
+    [ "$output" = "$(cat "$_LOG_FILE" | $_JQ -r '.[].id_str' | sed -E '$ d' | sort -n)" ]
 }
 
 @test "CHECK: fetch_tweet_ids(): no \$_INPUT_FILE nothing to fetch" {
@@ -197,22 +227,36 @@ setup() {
     [ "$output" = "Nothing to fetch!" ]
 }
 
-@test "CHECK: fetch_tweet_ids(): \$_INPUT_FILE" {
-    get_tweet_id_from_file() {
-        sed '5!d' "$_TWEET_IDS"
-        sed '2!d' "$_TWEET_IDS"
-        sed '3!d' "$_TWEET_IDS"
-        sed '3!d' "$_TWEET_IDS"
-    }
-
+@test "CHECK: fetch_tweet_ids(): \$_INPUT_FILE fav" {
     _TIMESTAMP="$(date +%s)"
-    _INPUT_FILE="$_TWEET_FILE"
+    _INPUT_FILE="$_LIKE_FILE"
+    _TWEETS_LIKES="likes"
     run fetch_tweet_ids "fav"
     [ "$status" -eq 0 ]
-    [ "${lines[0]}" = "11223344550002" ]
-    [ "${lines[1]}" = "11223344550003" ]
+    [ "${lines[0]}" = "11223344550001" ]
+    [ "${lines[1]}" = "11223344550002" ]
     [ "${lines[2]}" = "11223344550003" ]
-    [ "${lines[3]}" = "1111223344550005" ]
+}
+
+@test "CHECK: fetch_tweet_ids(): \$_INPUT_FILE tweet_and_rt" {
+    _TIMESTAMP="$(date +%s)"
+    _INPUT_FILE="$_TWEET_FILE"
+    _TWEETS_LIKES="tweets"
+    run fetch_tweet_ids "tweet_and_rt"
+    [ "$status" -eq 0 ]
+    [ "${lines[0]}" = "11223344550001" ]
+    [ "${lines[1]}" = "11223344550002" ]
+    [ "${lines[2]}" = "11223344550003" ]
+}
+
+@test "CHECK: fetch_tweet_ids(): \$_INPUT_FILE tweet" {
+    _TIMESTAMP="$(date +%s)"
+    _INPUT_FILE="$_TWEET_FILE"
+    _TWEETS_LIKES="tweets"
+    run fetch_tweet_ids "tweet"
+    [ "$status" -eq 0 ]
+    [ "${lines[0]}" = "11223344550001" ]
+    [ "${lines[1]}" = "11223344550003" ]
 }
 
 @test "CHECK: fetch_tweet_ids(): \$_INPUT_FILE nothing to fetch" {

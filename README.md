@@ -11,7 +11,7 @@ For some reason, after a bad dream, suddenly you want to reduce your digital foo
 
 ## Scripts
 
-- login-twitter.js: fetch Twitter tokens
+- bin/login-twitter.js: fetch Twitter tokens
 
 - tweet-eraser.sh: main script to call Twitter APIs
 
