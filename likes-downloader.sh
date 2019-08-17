@@ -26,7 +26,8 @@ set_var() {
     _TIMESTAMP=$(date +%s)
     _LOGIN_TWITTER_JS="./login-twitter.js"
     _MAX_ID="9223000000000000000"
-    _OUTPUT_FILE="$(date +%s).md"
+    _LOG_DIR="./log" && mkdir -p "$_LOG_DIR"
+    _OUTPUT_FILE="$_LOG_DIR/$(date +%s).md"
 }
 
 set_command() {

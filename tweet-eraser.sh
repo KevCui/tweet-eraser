@@ -48,6 +48,7 @@ set_var() {
     _TIMESTAMP=$(date +%s)
     _LOGIN_TWITTER_JS="./login-twitter.js"
     _MAX_ID="9223000000000000000"
+    _LOG_DIR="./log" && mkdir -p "$_LOG_DIR"
 }
 
 set_command() {
@@ -151,9 +152,9 @@ login_twitter() {
         echo -n "Twitter password: " >&2
         read -rs p
         echo ""
-        r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 1 "$u" "$p" | tee "${_TIMESTAMP}_tokens.log")
+        r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 1 "$u" "$p" | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
     else
-        r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 0 | tee "${_TIMESTAMP}_tokens.log")
+        r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 0 | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
     fi
 
     _COOKIE=$(echo "$r" | grep "kdt" | $_JQ -r '.[] | "\(.name)=\(.value);"' | awk '{printf $0}')
@@ -264,7 +265,7 @@ fetch_tweet_ids() {
             ids="$(get_tweet_id_from_file "$_INPUT_FILE")"
         fi
     fi
-    echo "$ids" | sort -n | tee "${_TIMESTAMP}_ids_${1:-}.log"
+    echo "$ids" | sort -n | tee "$_LOG_DIR/${_TIMESTAMP}_ids_${1:-}.log"
 }
 
 delete_likes() {
