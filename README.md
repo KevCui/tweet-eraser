@@ -56,7 +56,7 @@ Options:
 
 ```
 Usage:
-  ./login-twitter.js <chrome_path> <no_browser_boolean> <username> <password>
+  node login-twitter.js <chrome_path> <no_browser_boolean> <username> <password>
 
   chrome_path:        path to chrome/chromium binary
   no_browser_boolean: 1 true, headless mode; 0 false, open browser
