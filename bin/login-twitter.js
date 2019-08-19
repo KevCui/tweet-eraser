@@ -5,7 +5,7 @@
 //   username:           twitter account email address or phone nubmer
 //   password:           twitter credential
 
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 
 (async() => {
     const chrome = process.argv[2];
