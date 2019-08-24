@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Download likes to markdown file
+# Download tweets and RTs to markdown file
 #
 #/ Usage:
-#/   ./likes-downloader.sh [-p]
+#/   ./tweets-downloader.sh [-p]
 #/
 #/ Options:
 #/   -p               Optional, hide browser (use headless mode) and login from terminal
@@ -47,15 +47,15 @@ set_args() {
     done
 }
 
-download_likes() {
-    # Download likes
+download_tweets() {
+    # Download tweets
     local maxid currentmaxid data
 
     maxid="$_MAX_ID"
     currentmaxid=""
     data=""
     while true; do
-        data="$(call_favorites_list "$maxid" | $_JQ -r '.[] | "---\n\(.text)\nhttps://twitter.com/\(.user.screen_name)/status/\(.id_str)"')"
+        data="$(call_user_timeline "$maxid" true | $_JQ -r '.[] | "---\n\(.text)\nhttps://twitter.com/\(.user.screen_name)/status/\(.id_str)"')"
         currentmaxid=$(echo "$data" | tail -1 | sed -E 's/.*status\///')
 
         if [[ "$maxid" == "$currentmaxid" ]]; then
@@ -72,7 +72,7 @@ main() {
     set_command
     set_var
     login_twitter
-    download_likes
+    download_tweets
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

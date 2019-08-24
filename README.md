@@ -13,9 +13,11 @@ For some reason, after a bad dream, suddenly you want to reduce your digital foo
 
 - bin/login-twitter.js: fetch Twitter tokens
 
-- tweet-eraser.sh: main script to call Twitter APIs
+- tweets-eraser.sh: main script to call Twitter APIs
 
 - likes-downloader.sh: additional script to download Twitter likes to a markdown file as a quick backup
+
+- tweets-downloader.sh: additional script to download tweets and RTs as a quick backup
 
 ## Preparation
 
@@ -68,12 +70,25 @@ Usage:
 
 ```
 Usage:
-  ./like-downloader.sh [-p]
+  ./likes-downloader.sh [-p]
 
 Options:
   -p               Optional, hide browser (use headless mode) and login from terminal
                    This option doesn't support 2FA
   -h | --help      Display this help message
+```
+
+- tweets-downloader.sh
+
+```
+Usage:
+  ./tweets-downloader.sh [-p]
+
+Options:
+  -p               Optional, hide browser (use headless mode) and login from terminal
+                   This option doesn't support 2FA
+  -h | --help      Display this help message
+
 ```
 
 ## Examples
