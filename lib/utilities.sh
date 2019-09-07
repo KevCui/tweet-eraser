@@ -41,7 +41,7 @@ login_twitter() {
         r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 0 | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
     fi
 
-    _COOKIE=$(echo "$r" | grep "kdt" | $_JQ -r '.[] | "\(.name)=\(.value);"' | awk '{printf $0}')
+    _COOKIE=$(echo "$r" | grep "kdt" | $_JQ -r '.[] | "\(.name)=\(.value);"' | awk '{printf "%s", $0}')
     _CSRF_TOKEN=$(echo "$r" | grep "x-csrf-token" | $_JQ -r '."x-csrf-token"')
     _AUTH_TOKEN=$(echo "$r" | grep "authorization" | $_JQ -r '.authorization')
 }
