@@ -36,9 +36,9 @@ login_twitter() {
         echo -n "Twitter password: " >&2
         read -rs p
         echo ""
-        r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 1 "$u" "$p" | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
+        r=$($_NODE --no-warnings "$_LOGIN_TWITTER_JS" "$_CHROME" 1 "$u" "$p" | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
     else
-        r=$($_NODE "$_LOGIN_TWITTER_JS" "$_CHROME" 0 | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
+        r=$($_NODE --no-warnings "$_LOGIN_TWITTER_JS" "$_CHROME" 0 | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
     fi
 
     _COOKIE=$(echo "$r" | grep "kdt" | $_JQ -r '.[] | "\(.name)=\(.value);"' | awk '{printf "%s", $0}')
