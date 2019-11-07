@@ -24,7 +24,7 @@ For some reason, after a bad dream, suddenly you want to reduce your digital foo
 - Install Puppeteer without installing additional Chrome:
 
 ```
-npm -i puppeteer-core
+npm i puppeteer-core
 ```
 
 OR
@@ -32,7 +32,7 @@ OR
 - Install Puppeteer with Chrome:
 
 ```
-npm -i puppeteer
+npm i puppeteer
 ```
 
 ## How to use
