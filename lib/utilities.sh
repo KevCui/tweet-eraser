@@ -42,8 +42,8 @@ login_twitter() {
     fi
 
     _COOKIE=$(echo "$r" | grep "kdt" | $_JQ -r '.[] | "\(.name)=\(.value);"' | awk '{printf "%s", $0}')
-    _CSRF_TOKEN=$(echo "$r" | grep "x-csrf-token" | $_JQ -r '."x-csrf-token"')
-    _AUTH_TOKEN=$(echo "$r" | grep "authorization" | $_JQ -r '.authorization')
+    _CSRF_TOKEN=$(echo "$r" | grep "x-csrf-token" | $_JQ -r '."x-csrf-token"' | head -1)
+    _AUTH_TOKEN=$(echo "$r" | grep "authorization" | $_JQ -r '.authorization' | head -1)
 }
 
 cleanup() {

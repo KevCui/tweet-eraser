@@ -17,7 +17,7 @@ const puppeteer = require('puppeteer-core');
     const inputLogin = '.js-username-field';
     const inputPassword = '.js-password-field';
     const sumbitButton = '.submit';
-    const homeButton = '.css-1dbjc4n.r-dnmrzs.r-1vvnge1';
+    const tweetButton = '.css-1dbjc4n.r-jw8lkh.r-e7q0ms';
 
     const browser = await puppeteer.launch({executablePath: chrome, headless: isheadless});
     const page = await browser.newPage();
@@ -33,8 +33,8 @@ const puppeteer = require('puppeteer-core');
         await elementHandle.press('Enter');
     }
 
-    await page.waitFor(homeButton);
-    await page.click(homeButton);
+    await page.waitFor(tweetButton);
+    await page.click(tweetButton);
 
     const cookie = await page.cookies();
     console.log(JSON.stringify(cookie));
