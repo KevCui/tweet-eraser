@@ -14,16 +14,16 @@ const puppeteer = require('puppeteer-core');
     const contentPassword = process.argv[5];
 
     const loginUrl='https://twitter.com/login';
-    const inputLogin = '.js-username-field';
-    const inputPassword = '.js-password-field';
-    const sumbitButton = '.submit';
-    const tweetButton = '.css-1dbjc4n.r-jw8lkh.r-e7q0ms';
+    const inputLogin = '[name="session[username_or_email]"]';
+    const inputPassword = '[name="session[password]"]';
+    const sumbitButton = '[data-testid="LoginForm_Login_Button"]';
+    const tweetButton = '[data-testid="SideNav_NewTweet_Button"]';
 
     const browser = await puppeteer.launch({executablePath: chrome, headless: isheadless});
     const page = await browser.newPage();
     await page.goto(loginUrl, {timeout: 30000, waitUntil: 'domcontentloaded'});
 
-    await page.waitFor(sumbitButton)
+    await page.waitForSelector(sumbitButton)
     if (contentPassword)  {
         await page.click(inputLogin)
         await page.type(inputLogin, contentLogin, {delay: 50});
@@ -33,7 +33,7 @@ const puppeteer = require('puppeteer-core');
         await elementHandle.press('Enter');
     }
 
-    await page.waitFor(tweetButton);
+    await page.waitForSelector(tweetButton);
     await page.click(tweetButton);
 
     const cookie = await page.cookies();
@@ -41,14 +41,14 @@ const puppeteer = require('puppeteer-core');
 
     await page.setRequestInterception(true);
     page.on('request', request => {
-    if (request.url().indexOf('client_event.json') > -1) {
+    if (request.url().indexOf('badge_count.json') > -1) {
         const headers = request.headers();
-        if ('access-control-request-headers' in headers) {
-            request.continue();
-        } else {
+        if ('x-csrf-token' in headers) {
             request.abort();
             console.log(JSON.stringify(request.headers()));
             browser.close();
+        } else {
+            request.continue();
         }
     } else {
         request.continue();
