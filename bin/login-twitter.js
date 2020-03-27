@@ -33,7 +33,7 @@ const puppeteer = require('puppeteer-core');
         await elementHandle.press('Enter');
     }
 
-    await page.waitForSelector(tweetButton);
+    await page.waitForSelector(tweetButton, {timeout: 60000});
     await page.click(tweetButton);
 
     const cookie = await page.cookies();
