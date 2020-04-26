@@ -3,11 +3,12 @@
 # Download tweets and RTs to markdown file
 #
 #/ Usage:
-#/   ./tweets-downloader.sh [-p]
+#/   ./tweets-downloader.sh [-p] [-k]
 #/
 #/ Options:
 #/   -p               Optional, hide browser (use headless mode) and login from terminal
 #/                    This option doesn't support 2FA
+#/   -k               Optional, keep login tokens, by default no
 #/   -h | --help      Display this help message
 
 set -e
@@ -31,10 +32,14 @@ set_command() {
 set_args() {
     # Declare arguments
     expr "$*" : ".*--help" > /dev/null && usage
-    while getopts ":hp" opt; do
+    _KEEP_TOKENS=false
+    while getopts ":hpk" opt; do
         case $opt in
             p)
                 _HEADLESS_MODE=true
+                ;;
+            k)
+                _KEEP_TOKENS=true
                 ;;
             h)
                 usage

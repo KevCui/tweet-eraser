@@ -25,25 +25,51 @@ command_not_found() {
     exit 1
 }
 
+is_token_expired() {
+    # Check if token is expried or not
+    # $1 token file
+    # $2 time to expire
+    local o
+    o="yes"
+    if [[ -f "$1" && -s "$1" ]]; then
+        local d n
+        d=$(date -d "$(date -r "$1") $2" +%s)
+        n=$(date +%s)
+
+        if [[ "$n" -lt "$d" ]]; then
+            o="no"
+        fi
+    fi
+    echo "$o"
+}
+
 login_twitter() {
     # Fetch tokens from twitter login
     local r
 
-    if [[ "${_HEADLESS_MODE:-}" == true ]]; then
-        local u p
-        echo -n "Twitter email/phone: " >&2
-        read -r u
-        echo -n "Twitter password: " >&2
-        read -rs p
-        echo ""
-        r=$($_NODE --no-warnings "$_LOGIN_TWITTER_JS" "$_CHROME" 1 "$u" "$p" | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
+    if [[ "$(is_token_expired "$_LOG_DIR/last_tokens.log" "+1 year")" == "yes" ]]; then
+        if [[ "${_HEADLESS_MODE:-}" == true ]]; then
+            local u p
+            echo -n "Twitter email/phone: " >&2
+            read -r u
+            echo -n "Twitter password: " >&2
+            read -rs p
+            echo ""
+            r=$($_NODE --no-warnings "$_LOGIN_TWITTER_JS" "$_CHROME" 1 "$u" "$p")
+        else
+            r=$($_NODE --no-warnings "$_LOGIN_TWITTER_JS" "$_CHROME" 0)
+        fi
+
+        if [[ "$_KEEP_TOKENS" == true ]]; then
+            echo "$r" > "$_LOG_DIR/last_tokens.log"
+        fi
     else
-        r=$($_NODE --no-warnings "$_LOGIN_TWITTER_JS" "$_CHROME" 0 | tee "$_LOG_DIR/${_TIMESTAMP}_tokens.log")
+        r=$(cat "$_LOG_DIR/last_tokens.log")
     fi
 
-    _COOKIE=$(echo "$r" | grep "kdt" | $_JQ -r '.[] | "\(.name)=\(.value);"' | awk '{printf "%s", $0}')
-    _CSRF_TOKEN=$(echo "$r" | grep "x-csrf-token" | $_JQ -r '."x-csrf-token"' | head -1)
-    _AUTH_TOKEN=$(echo "$r" | grep "authorization" | $_JQ -r '.authorization' | head -1)
+    _COOKIE=$(grep "kdt" <<< "$r" | $_JQ -r '.[] | "\(.name)=\(.value);"' | awk '{printf "%s", $0}')
+    _CSRF_TOKEN=$(grep "x-csrf-token" <<< "$r" | $_JQ -r '."x-csrf-token"' | head -1)
+    _AUTH_TOKEN=$(grep "authorization" <<< "$r" | $_JQ -r '.authorization' | head -1)
 }
 
 cleanup() {

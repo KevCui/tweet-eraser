@@ -41,7 +41,7 @@ npm i puppeteer
 
 ```
 Usage:
-  ./tweet-eraser.sh [-t|-f <file>] [-r|-f <file>] [-l|-f <file>] [-p]
+  ./tweet-eraser.sh [-t|-f <file>] [-r|-f <file>] [-l|-f <file>] [-p] [-k]
 
 Options:
   -t               Optional, remove tweets
@@ -51,6 +51,7 @@ Options:
   -l               Optional, remove likes
                    -f <file> to use resource file like.js
   -p               Optional, hide browser (use headless mode) and login from terminal
+  -k               Optional, keep login tokens, by default no
   -h | --help      Display this help message
 ```
 
@@ -70,11 +71,12 @@ Usage:
 
 ```
 Usage:
-  ./likes-downloader.sh [-p]
+  ./likes-downloader.sh [-p] [-k]
 
 Options:
   -p               Optional, hide browser (use headless mode) and login from terminal
                    This option doesn't support 2FA
+  -k               Optional, keep login tokens, by default no
   -h | --help      Display this help message
 ```
 
@@ -82,11 +84,12 @@ Options:
 
 ```
 Usage:
-  ./tweets-downloader.sh [-p]
+  ./tweets-downloader.sh [-p] [-k]
 
 Options:
   -p               Optional, hide browser (use headless mode) and login from terminal
                    This option doesn't support 2FA
+  -k               Optional, keep login tokens, by default no
   -h | --help      Display this help message
 
 ```

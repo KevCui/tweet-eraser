@@ -3,7 +3,7 @@
 # Erase some/all user tweets/RTs/likes
 #
 #/ Usage:
-#/   ./tweet-eraser.sh [-t|-f <file>] [-r|-f <file>] [-l|-f <file>] [-p]
+#/   ./tweet-eraser.sh [-t|-f <file>] [-r|-f <file>] [-l|-f <file>] [-p] [-k]
 #/
 #/ Options:
 #/   -t               Optional, remove tweets
@@ -14,6 +14,7 @@
 #/                    -f <file> to use resource file like.js
 #/   -p               Optional, hide browser (use headless mode) and login from terminal
 #/                    This option doesn't support 2FA
+#/   -k               Optional, keep login tokens, by default not
 #/   -h | --help      Display this help message
 #/
 #/ Exmaples:
@@ -52,7 +53,8 @@ set_command() {
 set_args() {
     # Declare arguments
     expr "$*" : ".*--help" > /dev/null && usage
-    while getopts ":htrlpf:" opt; do
+    _KEEP_TOKENS=false
+    while getopts ":htrlpkf:" opt; do
         case $opt in
             t)
                 _DELETE_TWEET=true
@@ -69,6 +71,9 @@ set_args() {
                 ;;
             p)
                 _HEADLESS_MODE=true
+                ;;
+            k)
+                _KEEP_TOKENS=true
                 ;;
             h)
                 usage

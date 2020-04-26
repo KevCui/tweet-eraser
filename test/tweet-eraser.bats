@@ -265,3 +265,32 @@ setup() {
     [ "$status" -eq 1 ]
     [ "$output" = "Nothing to fetch!" ]
 }
+
+@test "CHECK: is_token_expired(): yes, file doesn't exist" {
+    run is_token_expired "$(date +%s)" "+1 year"
+    [ "$status" -eq 0 ]
+    [ "$output" = "yes" ]
+}
+
+@test "CHECK: is_token_expired(): yes empty file" {
+    tmpfile=$(mktemp)
+    run is_token_expired "$tmpfile" "+1 month"
+    [ "$status" -eq 0 ]
+    [ "$output" = "yes" ]
+}
+
+@test "CHECK: is_token_expired(): yes, expired" {
+    tmpfile=$(mktemp)
+    echo "test" > "$tmpfile"
+    run is_token_expired "$tmpfile" "-1 hour"
+    [ "$status" -eq 0 ]
+    [ "$output" = "yes" ]
+}
+
+@test "CHECK: is_token_expired(): no" {
+    tmpfile=$(mktemp)
+    echo "test" > "$tmpfile"
+    run is_token_expired "$tmpfile" "+1 min"
+    [ "$status" -eq 0 ]
+    [ "$output" = "no" ]
+}
