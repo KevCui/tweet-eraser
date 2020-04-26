@@ -107,6 +107,7 @@ setup() {
 
 @test "CHECK: cleanup(): no token" {
     _COOKIE="cookie"
+    _KEEP_TOKENS=false
     run cleanup
     [ "$status" -eq 0 ]
     [ "$output" = "" ]
@@ -115,6 +116,17 @@ setup() {
 @test "CHECK: cleanup(): no cookie" {
     _AUTH_TOKEN="token"
     _CSRF_TOKEN="token"
+    _KEEP_TOKENS=false
+    run cleanup
+    [ "$status" -eq 0 ]
+    [ "$output" = "" ]
+}
+
+@test "CHECK: cleanup(): keep token" {
+    _AUTH_TOKEN="token"
+    _CSRF_TOKEN="token"
+    _COOKIE="cookie"
+    _KEEP_TOKENS=true
     run cleanup
     [ "$status" -eq 0 ]
     [ "$output" = "" ]
@@ -127,6 +139,7 @@ setup() {
     _CSRF_TOKEN="token"
     _AUTH_TOKEN="token"
     _COOKIE="cookie"
+    _KEEP_TOKENS=false
     run cleanup
     [ "$status" -eq 0 ]
     [ "$output" = "logout" ]

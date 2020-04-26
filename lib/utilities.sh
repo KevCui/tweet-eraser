@@ -74,7 +74,7 @@ login_twitter() {
 
 cleanup() {
     # Invalid all tokens when exit
-    if [[ -n "${_COOKIE:-}" && -n "${_CSRF_TOKEN:-}" && -n "${_AUTH_TOKEN:-}" ]]; then
+    if [[ -n "${_COOKIE:-}" && -n "${_CSRF_TOKEN:-}" && -n "${_AUTH_TOKEN:-}" && "$_KEEP_TOKENS" == false ]]; then
         logout_twitter
     fi
 }
