@@ -23,7 +23,7 @@ For some reason, after a bad dream, suddenly you want to reduce your digital foo
 
 - Install Puppeteer without installing additional Chrome:
 
-```
+```bash
 npm i puppeteer-core
 ```
 
@@ -31,7 +31,7 @@ OR
 
 - Install Puppeteer with Chrome:
 
-```
+```bash
 npm i puppeteer
 ```
 
@@ -91,44 +91,43 @@ Options:
                    This option doesn't support 2FA
   -k               Optional, keep login tokens, by default no
   -h | --help      Display this help message
-
 ```
 
 ## Examples
 
 - Erase most recent tweets (< 3200):
 
-```
+```bash
 ~$ ./tweet-eraser.sh -t
 ```
 
 - Erase most recent tweets and RTs (< 3200):
 
-```
+```bash
 ~$ ./tweet-eraser.sh -r
 ```
 
 - Erase likes:
 
-```
+```bash
 ~$ ./tweet-eraser.sh -l
 ```
 
 - Erase tweets (> 3200) with local input file:
 
-```
+```bash
 ~$ ./tweet-eraser.sh -t -f tweet.js
 ```
 
 - Erase likes, using headless mode:
 
-```
+```bash
 ~$ ./tweet-eraser.sh -l -p
 ```
 
 ## Run tests
 
-```
+```bash
 ~$ bats test/tweet-eraser.bats
 ```
 
