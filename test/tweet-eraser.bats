@@ -7,14 +7,14 @@ BATS_TEST_SKIPPED=
 
 setup() {
     _SCRIPT="./tweet-eraser.sh"
+    source $_SCRIPT
+
     _JQ="$(command -v jq)"
     _LIKE_FILE="test/test-like.js"
     _TWEET_FILE="test/test-tweet.js"
     _TWEET_IDS="test/test-tweet.ids"
-    _LOG_DIR="./log" && mkdir -p "$_LOG_DIR"
+    _LOG_DIR="$(mktemp -d)"
     _MAX_ID="99999999999999999999999"
-
-    source $_SCRIPT
 }
 
 @test "CHECK: command_not_found()" {

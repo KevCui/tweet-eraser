@@ -10,7 +10,6 @@ _LOGIN_TWITTER_JS="./bin/login-twitter.js"
 _TIMESTAMP=$(date +%s)
 _LOG_DIR="./log" && mkdir -p "$_LOG_DIR"
 
-
 usage() {
     # Display usage message
     printf "\n%b\n" "$(grep '^#/' "$0" | cut -c4-)" && exit 0
@@ -75,6 +74,7 @@ login_twitter() {
 cleanup() {
     # Invalid all tokens when exit
     if [[ -n "${_COOKIE:-}" && -n "${_CSRF_TOKEN:-}" && -n "${_AUTH_TOKEN:-}" && "$_KEEP_TOKENS" == false ]]; then
+        rm -f "$_LOG_DIR/last_tokens.log"
         logout_twitter
     fi
 }

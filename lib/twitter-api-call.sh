@@ -15,6 +15,7 @@ logout_twitter() {
         -H 'Connection: keep-alive' \
         -H 'authorization: '"$_AUTH_TOKEN" \
         -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'Cookie: '"$_COOKIE" \
         -H 'cache-control: no-cache'
 }
 
