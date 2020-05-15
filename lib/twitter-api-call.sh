@@ -11,7 +11,6 @@ logout_twitter() {
     printf "\nLog out... " >&2
     $_CURL -sSX POST "$_HOST/account/logout.json" \
         -H 'Accept: */*' \
-        -H 'Cache-Control: no-cache' \
         -H 'Connection: keep-alive' \
         -H 'authorization: '"$_AUTH_TOKEN" \
         -H 'x-csrf-token: '"$_CSRF_TOKEN" \
@@ -26,7 +25,6 @@ call_user_timeline() {
     echo "max id: $1" >&2
     $_CURL -sSX GET "$_HOST/statuses/user_timeline.json?max_id=$1&include_rts=$2&count=200" \
         -H 'Accept: */*' \
-        -H 'Cache-Control: no-cache' \
         -H 'Connection: keep-alive' \
         -H 'Cookie: '"$_COOKIE" \
         -H 'authorization: '"$_AUTH_TOKEN" \
@@ -40,7 +38,6 @@ call_favorites_list() {
     echo "max id: $1" >&2
     $_CURL -sSX GET "$_HOST/favorites/list.json?max_id=$1&count=200" \
         -H 'Accept: */*' \
-        -H 'Cache-Control: no-cache' \
         -H 'Connection: keep-alive' \
         -H 'Cookie: '"$_COOKIE" \
         -H 'authorization: '"$_AUTH_TOKEN" \
@@ -54,7 +51,6 @@ delete_likes() {
     printf "\nDeleting %s... " "$1" >&2
     $_CURL -sSX POST "$_HOST/favorites/destroy.json?id=$1" \
         -H 'Accept: */*' \
-        -H 'Cache-Control: no-cache' \
         -H 'Connection: keep-alive' \
         -H 'Cookie: '"$_COOKIE" \
         -H 'authorization: '"$_AUTH_TOKEN" \
@@ -68,10 +64,34 @@ delete_tweet() {
     printf "\nDeleting %s... " "$1" >&2
     $_CURL -sSX POST "$_HOST/statuses/destroy/$1.json" \
         -H 'Accept: */*' \
-        -H 'Cache-Control: no-cache' \
         -H 'Connection: keep-alive' \
         -H 'Cookie: '"$_COOKIE" \
         -H 'authorization: '"$_AUTH_TOKEN" \
         -H 'x-csrf-token: '"$_CSRF_TOKEN" \
         -H 'cache-control: no-cache'
+}
+
+call_list_lists() {
+    # Display all lists
+    # $1: user name
+    $_CURL -sSX GET "$_HOST/lists/list.json?screen_name=$1" \
+        -H 'Accept: */*' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: '"$_COOKIE" \
+        -H 'authorization: '"$_AUTH_TOKEN" \
+        -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'Cache-Control: no-cache'
+}
+
+call_list_member() {
+    # Display members of a list
+    # $1: user name
+    # $2: list slug
+    $_CURL -sSX GET "$_HOST/lists/members.json?owner_screen_name=${1}&slug=${2}&count=5000" \
+        -H 'Accept: */*' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: '"$_COOKIE" \
+        -H 'authorization: '"$_AUTH_TOKEN" \
+        -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'Cache-Control: no-cache'
 }
