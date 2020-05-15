@@ -1,7 +1,9 @@
 tweet-eraser
 ============
 
-For some reason, after a bad dream, suddenly you want to reduce your digital footprint. Now you start to search for a way to erase only tweets, or only tweets and RTs, or only likes. And you don't trust other 3rd-part service to do that for you, probably because of your bad dream. And you still want to keep your Twitter account active...
+> Erase tweets, likes...
+
+For some reason, after a bad dream, suddenly you want to reduce your digital footprint. Now you start to search for a way to erase tweets, RTs and likes. And you don't trust other 3rd-part service to do that for you, probably because of your bad dream. And you still want to keep your Twitter account active...
 
 ## Dependency
 
@@ -165,6 +167,6 @@ It took 15 minutes to erase 2400 tweets. Not great, not terrible.
 
 Yes, it's possible. Change `_MAX_ID` variable in `tweet-eraser.sh`. Put a tweet ID number which is greater than old tweets IDs but less than recent ones IDs.
 
-- Can I erase my tweet data on other 3rd-part servers using this script?
+- Can I erase my tweet data stored on other 3rd-part servers using this script?
 
 No.
