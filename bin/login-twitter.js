@@ -40,8 +40,9 @@ const puppeteer = require('puppeteer-core');
     console.log(JSON.stringify(cookie));
 
     await page.setRequestInterception(true);
+    page._client.send('Network.setBypassServiceWorker', {bypass: true})
     page.on('request', request => {
-    if (request.url().indexOf('badge_count.json') > -1) {
+    if (request.url().indexOf('client_event.json') > -1) {
         const headers = request.headers();
         if ('x-csrf-token' in headers) {
             request.abort();
