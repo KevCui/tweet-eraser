@@ -1,4 +1,4 @@
-# tweet-eraser
+# tweet-eraser ![CI](https://github.com/KevCui/tweet-eraser/workflows/CI/badge.svg)
 
 > Erase tweets, likes...
 
