@@ -20,5 +20,8 @@ jobs:
       - name: Install bats
         run: npm install -g bats
 
+      - name :Install jq
+        run: sudo apt-get install jq
+
       - name: Run tests
         run: cd "$GITHUB_WORKSPACE" && bats test/tweet-eraser.bats
