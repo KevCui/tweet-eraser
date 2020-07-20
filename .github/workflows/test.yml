@@ -20,7 +20,7 @@ jobs:
       - name: Install bats
         run: npm install -g bats
 
-      - name :Install jq
+      - name: Install jq
         run: sudo apt-get install jq
 
       - name: Run tests
