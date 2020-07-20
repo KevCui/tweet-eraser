@@ -23,5 +23,8 @@ jobs:
       - name: Install jq
         run: sudo apt-get install jq
 
+      - name: Install chromium
+        run: sudo apt-get install chromium
+
       - name: Run tests
         run: cd "$GITHUB_WORKSPACE" && bats test/tweet-eraser.bats
