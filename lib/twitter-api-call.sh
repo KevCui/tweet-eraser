@@ -126,7 +126,7 @@ call_list_status() {
     # Display timeline of a list
     # $1: owner screen name
     # $2: list slug
-    $_CURL -sSX GET "$_HOST/lists/statuses.json?owner_screen_name=${1}&slug=${2}&count=200&include_rts=true" \
+    $_CURL -sSX GET "$_HOST/lists/statuses.json?owner_screen_name=${1}&slug=${2}&count=200" \
         -H 'Accept: */*' \
         -H 'Connection: keep-alive' \
         -H 'Cookie: '"$_COOKIE" \
