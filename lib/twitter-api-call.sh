@@ -134,3 +134,15 @@ call_list_status() {
         -H 'x-csrf-token: '"$_CSRF_TOKEN" \
         -H 'Cache-Control: no-cache'
 }
+
+call_retweet() {
+    # retweet
+    # $1: id
+    $_CURL -sSX POST "$_HOST/statuses/retweet/${1}.json" \
+        -H 'Accept: */*' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: '"$_COOKIE" \
+        -H 'authorization: '"$_AUTH_TOKEN" \
+        -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'Cache-Control: no-cache'
+}
