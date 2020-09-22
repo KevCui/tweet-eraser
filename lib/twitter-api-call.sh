@@ -95,3 +95,42 @@ call_list_member() {
         -H 'x-csrf-token: '"$_CSRF_TOKEN" \
         -H 'Cache-Control: no-cache'
 }
+
+call_list_member_create() {
+    # Add member to a list
+    # $1: owner screen name
+    # $2: list slug
+    # $3: a comma-separated list of member screen name
+    $_CURL -sSX POST "$_HOST/lists/members/create_all.json?owner_screen_name=${1}&slug=${2}&screen_name=${3}" \
+        -H 'Accept: */*' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: '"$_COOKIE" \
+        -H 'authorization: '"$_AUTH_TOKEN" \
+        -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'Cache-Control: no-cache'
+}
+
+call_list_following() {
+    # Display list of following accounts
+    # $1: user name
+    $_CURL -sSX GET "$_HOST/friends/list.json?screen_name=${1}&count=200" \
+        -H 'Accept: */*' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: '"$_COOKIE" \
+        -H 'authorization: '"$_AUTH_TOKEN" \
+        -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'Cache-Control: no-cache'
+}
+
+call_list_status() {
+    # Display timeline of a list
+    # $1: owner screen name
+    # $2: list slug
+    $_CURL -sSX GET "$_HOST/lists/statuses.json?owner_screen_name=${1}&slug=${2}&count=200&include_rts=true" \
+        -H 'Accept: */*' \
+        -H 'Connection: keep-alive' \
+        -H 'Cookie: '"$_COOKIE" \
+        -H 'authorization: '"$_AUTH_TOKEN" \
+        -H 'x-csrf-token: '"$_CSRF_TOKEN" \
+        -H 'Cache-Control: no-cache'
+}
